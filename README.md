@@ -27,10 +27,10 @@ clone this project and compile for use
 ## Author
 
 - *Created by Attila Jancik*
-- [Email: ](mailto:attila@gecora.com)
-- [Website: ](https://gecora.com)
-- [GitHub: ](https://github.com/AttilaJancik)
-- [LinkedIn: ](www.linkedin.com/in/attila-jančik-a416b83a8)
+- [Email](mailto:attila@gecora.com)
+- [Website](https://gecora.com)
+- [GitHub](https://github.com/AttilaJancik)
+- LinkedIn
 
 ## Acknowledgements
 

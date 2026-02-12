@@ -51,7 +51,7 @@ namespace TestKasoChduA
                 Heslo = "88812345678900001",
                 MaxTimeDifference = 4200,
                 KontrolovatHodnotyPlatidiel = true,
-                FsServiceTimeout = 3000,
+                FsServiceTimeout = 7000,
                 KverkomSettings = taxisKverkomSettings,
             });
             Console.WriteLine($".:: taxisDrvAPIInitResult :\n- OK={taxisDrvAPIInitResult.OK}, ErrorCode={taxisDrvAPIInitResult.ErrorCode}, WarningCode={taxisDrvAPIInitResult.WarningCode}, Message={taxisDrvAPIInitResult.Message}");
@@ -59,7 +59,8 @@ namespace TestKasoChduA
             if (!taxisDrvAPIInitResult.OK)
             {
                 Console.WriteLine($".:: API initialization failed. Exiting.");
-                return;
+
+                return;  // >>>>>>> EXIT
             }
 
             //--- set methods parameters for kverkom
@@ -76,7 +77,7 @@ namespace TestKasoChduA
                 TlacVystup = TlacVystup.Nie,
                 VerziaPlatby = EPayme.V2_0,
                 KontextPlatby = "m",
-                Suma = 2.00m,
+                Suma = 3.50m,
                 IBAN = "SK8711000000002916560891",  // Tatra banka
                 //+IBAN = "SK2783605207004202943822",  // mBank
                 NazovUctu = "Attila Jancik - TEST QR pay",
@@ -85,10 +86,12 @@ namespace TestKasoChduA
                 //+Printer = "Tlačiareň QR kódov"
             };
 
+            var lastQrId = "QR-990cfbd3750641638f23a0fa04c99c4f";
+
             // for ZrusQrKodPlatby - canceling a transaction number on a financial report
             taxisZrusQrKodPlatbyParams = new TaxisZrusQrKodPlatbyParams()
             {
-                IdTransakcie = "QR-990cfbd3750641638f23a0fa04c99c4f",
+                IdTransakcie = lastQrId,
                 Datum= DateTime.Now.Date,
                 //+PrintParams = 
                 TlacVystup = TlacVystup.Tlacit
@@ -97,27 +100,30 @@ namespace TestKasoChduA
             // for OverStavQrPlatby - checking the status of a transaction number on a financial report
             taxisOverQrKodPlatbyParams = new TaxisOverQrKodPlatbyParams()
             {
-                IdTransakcie = "QR-990cfbd3750641638f23a0fa04c99c4f"
+                IdTransakcie = lastQrId
             };
 
             // for DajQrTransakcie - getting a list of transactions for a given date
             taxisQrTransakcieParams = new TaxisQrTransakcieParams()
             {
                 DatumOd = DateTime.Now.Date
+                //+DatumOd = DateTime.Now.AddDays(-2)
             };
 
             // for DajInfoQrPlatby - getting information about a transaction number on a financial report (in NOP)
             taxisInfoQrKoduPlatbyParams = new TaxisInfoQrKoduPlatbyParams()
             {
-                IdTransakcie = "QR-990cfbd3750641638f23a0fa04c99c4f"
+                IdTransakcie = lastQrId
             };
 
             //--- run methods from api chdu/kverkom
 
-            var runFunction = "ZrusQrKodPlatby";  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            // choices: DajQrKodPlatby , ZrusQrKodPlatby , OverStavQrPlatby , DajQrTransakcie [] , DajInfoQrPlatby
+            var runFunction = "DajQrTransakcie";  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
             switch (runFunction)
             {
-                case "DajQrKodPlatby":
+                case "DajQrKodPlatby":  // last QrId: "QR-990cfbd3750641638f23a0fa04c99c4f"
                     // DajQrKodPlatby - generating a transaction number on a financial report
                     Console.WriteLine($".:: Calling taxisDrvAPI.DajQrKodPlatby with parameters :\n- Qr.Create={taxisQrKodPlatbyParams.Qr.Create}, Qr.PixelsPerModule={taxisQrKodPlatbyParams.Qr.PixelsPerModule}, Qr.Level={taxisQrKodPlatbyParams.Qr.Level}," +
                         $"\n -  TlacVystup={taxisQrKodPlatbyParams.TlacVystup}, VerziaPlatby={taxisQrKodPlatbyParams.VerziaPlatby}, KontextPlatby={taxisQrKodPlatbyParams.KontextPlatby}, Suma={taxisQrKodPlatbyParams.Suma}, IBAN={taxisQrKodPlatbyParams.IBAN}, NazovUctu={taxisQrKodPlatbyParams.NazovUctu}, Info={taxisQrKodPlatbyParams.Info}, DatumSplatnosti={taxisQrKodPlatbyParams.DatumSplatnosti}");
@@ -128,7 +134,7 @@ namespace TestKasoChduA
                     break;
 
                 case "ZrusQrKodPlatby":
-                    // DajQrKodPlatby - generating a transaction number on a financial report
+                    // ZrusQrKodPlatby - print confirmation that the payment by QR code was not paid
                     Console.WriteLine($".:: Calling taxisDrvAPI.ZrusQrKodPlatby with parameters :\n- IdTransakcie={taxisZrusQrKodPlatbyParams.IdTransakcie}, Datum={taxisZrusQrKodPlatbyParams.Datum}, TlacVystup={taxisZrusQrKodPlatbyParams.TlacVystup}");
 
                     taxisZrusQrKodPlatbyStatus = taxisDrvAPI.ZrusQrKodPlatby(taxisZrusQrKodPlatbyParams);
@@ -176,6 +182,7 @@ namespace TestKasoChduA
 
             }
 
+            taxisDrvAPI.Close();
         }
 
     }
