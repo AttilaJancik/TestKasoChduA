@@ -9,6 +9,7 @@ namespace TestKasoChduA
 
         static void Main(string[] args)
         {
+            Console.WriteLine($"\n------- TestKasoChduA : run on: {DateTime.Now} -------");
 
             TaxisDrvAPI.TaxisDrvAPI taxisDrvAPI = new TaxisDrvAPI.TaxisDrvAPI();
             TaxisDrvAPIInitResult taxisDrvAPIInitResult = new TaxisDrvAPIInitResult();
@@ -37,12 +38,13 @@ namespace TestKasoChduA
             TaxisKverkomSettings taxisKverkomSettings = new TaxisKverkomSettings()
             {
                 Timeout = 30000,
-                TypOverenia = ETypOvereniaPlatby.Dkp,
+                TypOverenia = ETypOvereniaPlatby.Transakcia,  // 0=TransakciaDB, 1=Transakcia, 2=Dkp : which method will be used to track the payment
                 Log = "log_kverkom.log",
                 //Zdroj = "TaxisKverkomApi.dll"
             };
 
             //--- init API chdu
+            Console.WriteLine($"... wait please, device now incialísed ...");
             taxisDrvAPIInitResult = taxisDrvAPI.Init(new TaxisDrvAPISettings()
             {
                 AutoLoginOfflineDocuments = true,
@@ -81,12 +83,16 @@ namespace TestKasoChduA
                 IBAN = "SK8711000000002916560891",  // Tatra banka
                 //+IBAN = "SK2783605207004202943822",  // mBank
                 NazovUctu = "Attila Jancik - TEST QR pay",
-                Info = $"Platba TEST, DT:{DateTime.Now.ToShortDateString().Replace(" ", "")}",
+                Info = $"Platba TEST, DT:{DateTime.Now.ToShortDateString().Replace(" ", "")}T{DateTime.Now.ToString("HH:mm:ss")}",
                 DatumSplatnosti = DateTime.Now.Date,
                 //+Printer = "Tlačiareň QR kódov"
             };
 
-            var lastQrId = "QR-990cfbd3750641638f23a0fa04c99c4f";
+            // *****************************************************************************
+            // **  here insert string of last successed transaction for "DajQrKodPlatby"  **
+            // *****************************************************************************
+            var lastQrId = "QR-95044452bacf453dbda78fc62ebe7733";
+
 
             // for ZrusQrKodPlatby - canceling a transaction number on a financial report
             taxisZrusQrKodPlatbyParams = new TaxisZrusQrKodPlatbyParams()
@@ -118,8 +124,10 @@ namespace TestKasoChduA
 
             //--- run methods from api chdu/kverkom
 
-            // choices: DajQrKodPlatby , ZrusQrKodPlatby , OverStavQrPlatby , DajQrTransakcie [] , DajInfoQrPlatby
-            var runFunction = "DajQrTransakcie";  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            // choices: DajQrKodPlatby , ZrusQrKodPlatby , OverStavQrPlatby , DajQrTransakcie => [] , DajInfoQrPlatby
+            var runFunction = "DajQrKodPlatby";  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+            Console.WriteLine($"... wait please, now communications with servers ...");
 
             switch (runFunction)
             {
@@ -183,6 +191,8 @@ namespace TestKasoChduA
             }
 
             taxisDrvAPI.Close();
+            Console.WriteLine(".:: taxisDrvAPI is Close");
+            Console.WriteLine($"\n------- TestKasoChduA : end on: {DateTime.Now} -------");
         }
 
     }

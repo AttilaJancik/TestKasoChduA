@@ -19,8 +19,8 @@ clone this project and compile for use
 
 ## Usage
 
-1. set actual data for variables: taxisKverkomSettings , taxisDrvAPI.Init , taxisQrKodPlatbyParams
-2. if need tracking of server, set variables: taxisZrusQrKodPlatbyParams , taxisOverQrKodPlatbyParams , taxisInfoQrKoduPlatbyParams
+1. set actual data for variables: **taxisKverkomSettings** , **taxisDrvAPI.Init** , **taxisQrKodPlatbyParams**
+2. if need tracking of server, set variable: **lastQrId**
 3. set variable **runFunction** for run selected function
 4. push *Start without debugging* in IDE (VS-26)
 
